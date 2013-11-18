@@ -79,23 +79,15 @@
     // create image array
 	NSMutableArray* topImages = [NSMutableArray arrayWithCapacity:10];
 	NSMutableArray* bottomImages = [NSMutableArray arrayWithCapacity:10];
-	
-    // append .bundle to name
-    NSString *filename = bundleName;
-    if (![filename hasSuffix:@".bundle"]) filename = [NSString stringWithFormat: @"%@.bundle", filename];
-    NSString *bundlePath = [[NSBundle mainBundle] pathForResource:filename ofType:nil];
-    NSAssert(bundlePath != nil, @"Bundle named '%@' not found!", filename);
-    if (!bundlePath) return;
     
 	// create bottom and top images
     for (NSInteger digit=0; digit<10; digit++)
     {
         // create path & image
-        NSString *imageName = [NSString stringWithFormat: @"%ld.png", (long)digit];
-        NSString *bundleImageName = [NSString stringWithFormat: @"%@/%@", filename, imageName];
-        NSString *path = [[NSBundle mainBundle] pathForResource:bundleImageName ofType:nil];
+        NSString *imageName = [NSString stringWithFormat: @"vs_timer_num_%d.png", digit];
+        NSString *path = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
         UIImage *sourceImage = [[UIImage alloc] initWithContentsOfFile:path];
-        NSAssert(sourceImage != nil, @"Did not find image '%@' in bundle named '%@'", imageName, filename);
+        NSAssert(sourceImage != nil, @"Did not find image '%@'", imageName);
         
         // generate & save images
         NSArray *images = [self generateImagesFromImage:sourceImage];

@@ -12,8 +12,8 @@
 
 
 static CGFloat JDFlipAnimationMinimumTimeInterval = 0.01; // = 100 fps
-static CGFloat JDFlipViewRelativeMargin = 0.05; // use 5% of width as margin
-
+static CGFloat JDFlipViewRelativeMargin = 0.15; // use 5% of width as margin
+static CGFloat JDFlipViewDigitSpace = 3.5; //in px
 
 typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
 	JDFlipAnimationDirectionUp,
@@ -239,6 +239,7 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
     NSMutableArray* digitViews = [[NSMutableArray alloc] initWithCapacity:digitCount];
     for (int i = 0; i < digitCount; i++) {
         view = [[JDFlipNumberDigitView alloc] initWithImageBundle:self.imageBundleName];
+        view.frame = CGRectMake(i*view.frame.size.width + (JDFlipViewDigitSpace * i) + 1, 0, view.frame.size.width, view.frame.size.height);
         [self addSubview:view];
         [digitViews addObject:view];
     }
@@ -460,7 +461,7 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
 		for (i = 0; i < count; i++) {
 			JDFlipNumberDigitView* view = self.digitViews[i];
 			lastSize = [view sizeThatFits:CGSizeMake(xWidth, size.height)];
-			xpos += lastSize.width + margin;
+			xpos += lastSize.width + margin + (JDFlipViewDigitSpace * i);
 		}
         xpos -= margin;
         
@@ -469,55 +470,6 @@ typedef NS_OPTIONS(NSUInteger, JDFlipAnimationDirection) {
 	}
     
     return [super sizeThatFits:size];
-}
-
-- (void)layoutSubviews;
-{
-    [super layoutSubviews];
-    
-	if (self.digitViews && self.digitViews.count > 0)
-    {
-        CGSize frameSize = self.bounds.size;
-        
-        CGFloat xpos = 0;
-		NSUInteger i, count = self.digitViews.count;
-        NSUInteger margin = [self marginForWidth:frameSize.width];
-        NSUInteger xWidth = ((frameSize.width-margin*(count-1))/count);
-        
-        // allow upscaling for layout
-		for (i = 0; i < count; i++) {
-			JDFlipNumberDigitView* view = self.digitViews[i];
-            view.upscalingAllowed = YES;
-        }
-        
-        // apply calculated size to first digitView & update to actual sizes
-        JDFlipNumberDigitView *firstDigit = self.digitViews[0];
-        firstDigit.frame = CGRectMake(0, 0, floor(xWidth), floor(frameSize.height));
-        xWidth = firstDigit.frame.size.width;
-        margin = [self marginForWidth:xWidth];
-        
-		for (i = 0; i < count; i++) {
-			JDFlipNumberDigitView* view = self.digitViews[i];
-			view.frame = CGRectMake(round(xpos), 0, floor(xWidth), floor(frameSize.height));
-            xpos = floor(CGRectGetMaxX(view.frame)+margin);
-		}
-        xpos -= margin;
-        
-        // center views in superview
-        CGPoint centerOffset = CGPointMake(xpos, firstDigit.frame.size.height);
-        centerOffset.x = floor((self.bounds.size.width - centerOffset.x)/2.0);
-        centerOffset.y = floor((self.bounds.size.height - centerOffset.y)/2.0);
-        for (NSInteger i=0; i<count; i++) {
-			JDFlipNumberDigitView* view = self.digitViews[i];
-            view.frame = CGRectOffset(view.frame, centerOffset.x, centerOffset.y);
-        }
-        
-        // stop upscaling, so sizeToFit works properly
-		for (i = 0; i < count; i++) {
-			JDFlipNumberDigitView* view = self.digitViews[i];
-            view.upscalingAllowed = NO;
-        }
-	}
 }
 
 @end

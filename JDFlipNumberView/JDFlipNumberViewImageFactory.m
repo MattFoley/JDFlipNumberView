@@ -84,7 +84,7 @@
     for (NSInteger digit=0; digit<10; digit++)
     {
         // create path & image
-        NSString *imageName = [NSString stringWithFormat: @"vs_timer_num_%d.png", digit];
+        NSString *imageName = [NSString stringWithFormat: @"vs_timer_num_%ld.png", (long)digit];
         NSString *path = [[NSBundle mainBundle] pathForResource:imageName ofType:nil];
         UIImage *sourceImage = [[UIImage alloc] initWithContentsOfFile:path];
         NSAssert(sourceImage != nil, @"Did not find image '%@'", imageName);
